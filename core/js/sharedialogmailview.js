@@ -70,12 +70,11 @@
 		},
 
 		toggleMailElements: function() {
-			var $email         = this.$el.find('.emailPrivateLinkForm--emailField');
 			var $emailElements = this.$el.find('.emailPrivateLinkForm--elements');
 
-			if ($email.val().length > 0 && $emailElements.is(":hidden")) {
+			if (this.addresses.length > 0 && $emailElements.is(":hidden")) {
 				$emailElements.slideDown();
-			} else if ($email.val().length === 0 && $emailElements.is(":visible")) {
+			} else if (this.addresses.length === 0 && $emailElements.is(":visible")) {
 				$emailElements.slideUp();
 			}
 		},
@@ -225,14 +224,13 @@
 					cache: true
 				}
 			}).on("change", function(e) {
-				// _this.toggleMailElements()
-
-				console.log(e);
-
 				if (e.added)
 					_this.addresses.push(e.added.id);
 
-				console.info("Addresses: ", _this.addresses);
+				if (e.removed)
+					_this.addresses = _.without(_this.addresses, e.removed.id)
+
+				_this.toggleMailElements();
 			});
 		},
 
