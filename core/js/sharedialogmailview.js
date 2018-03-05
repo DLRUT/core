@@ -47,8 +47,8 @@
 			"keydown .emailPrivateLinkForm--emailBodyField" : "expandMailBody"
 		},
 
-        /** @type {object} **/
-        addresses: {},
+		/** @type {object} **/
+		addresses: {},
 
 		/** @type {Function} **/
 		_template: undefined,
@@ -70,7 +70,7 @@
 		},
 
 		toggleMailElements: function() {
-			var $email         = $('.emailPrivateLinkForm--emailField');
+			var $email         = this.$el.find('.emailPrivateLinkForm--emailField');
 			var $emailElements = this.$el.find('.emailPrivateLinkForm--elements');
 
 			if ($email.val().length > 0 && $emailElements.is(":hidden")) {
@@ -78,8 +78,6 @@
 			} else if ($email.val().length === 0 && $emailElements.is(":visible")) {
 				$emailElements.slideUp();
 			}
-
-            console.log("mail: " + $email.val().length);
 		},
 
 		expandMailBody: function(event) {
@@ -186,46 +184,46 @@
 		},
 
 		afterRender: function () {
-            var _this = this;
+			var _this = this;
 
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
-                containerCssClass: 'emailPrivateLinkForm--dropDown',
-                tags: [],
+				containerCssClass: 'emailPrivateLinkForm--dropDown',
+				tags: [],
 				tokenSeparators:[","],
-                ajax: {
-                    url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
-                    dataType: 'json',
-                    quietMillis: 250,
-                    data: function (term) {
-                        return {
-                            search: term
-                        };
-                    },
-                    results: function (data, page, query) {
+				ajax: {
+					url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
+					dataType: 'json',
+					quietMillis: 250,
+					data: function (term) {
+						return {
+							search: term
+						};
+					},
+					results: function (data, page, query) {
 
-                        if (data.status != 'success')
-                            return null
+						if (data.status != 'success')
+							return null
 
-                        // format results
-                        var fromQuery = (query.term.length) ? [{ id: query.term, text: query.term }] : [];
-                        var fromData  = _.map(data.data, function(item) {
-                            return {
-                                'id'   : item.email,
-                                'text' : item.displayname + ' (' + item.email + ')'
-                            }
-                        });
+						// format results
+						var fromQuery = (query.term.length) ? [{ id: query.term, text: query.term }] : [];
+						var fromData  = _.map(data.data, function(item) {
+							return {
+								'id'   : item.email,
+								'text' : item.displayname + ' (' + item.email + ')'
+							}
+						});
 
-                        return {
-                            results: fromQuery.concat(fromData)
-                        }
-                    },
-                    cache: true
-                }
+						return {
+							results: fromQuery.concat(fromData)
+						}
+					},
+					cache: true
+				}
 			}).on("change", function(e) {
-                // _this.toggleMailElements()
+				// _this.toggleMailElements()
 
-                console.info("Added: ", e.added);
-            });
+				console.info("Added: ", e.added);
+			});
 		},
 
 		/**
