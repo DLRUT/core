@@ -47,7 +47,7 @@
 			"keydown .emailPrivateLinkForm--emailBodyField" : "expandMailBody"
 		},
 
-		/** @type {object} **/
+		/** @type {array} **/
 		addresses: [],
 
 		/** @type {Function} **/
@@ -98,15 +98,9 @@
 			var itemType   = this.itemModel.get('itemType');
 			var itemSource = this.itemModel.get('itemSource');
 
-			if (!this.validateEmail(mail.to)) {
-				return deferred.reject({
-					message: t('core', '{email} is not a valid address!', {email: mail.to})
-				});
-			}
-
 			var params = {
 				action      : 'email',
-				toAddress   : mail.to,
+				toAddress   : this.addresses.join(','),
 				emailBody   : mail.body,
 				bccSelf     : mail.bccSelf,
 				link        : this.model.getLink(),
@@ -144,10 +138,12 @@
 			var $formItems         = this.$el.find('.emailPrivateLinkForm input, .emailPrivateLinkForm textarea');
 			var $formSendIndicator = this.$el.find('.emailPrivateLinkForm--send-indicator');
 			var  mail = {
-				 to      : this.$el.find('.emailPrivateLinkForm--emailField').val().toLowerCase(),
+				 to      : this.addresses.join(','),
 				 bccSelf : this.$el.find('.emailPrivateLinkForm--emailBccSelf').is(':checked'),
 				 body    : this.$el.find('.emailPrivateLinkForm--emailBodyField').val()
 			};
+
+            console.log(this.addresses.join(','));
 
 			if (mail.to !== '') {
 				$formItems.prop('disabled', true);
@@ -167,6 +163,9 @@
 		},
 
 		render: function() {
+            // make sure this is empty
+            this.addresses = [];
+
 			this.$el.html(this.template({
 				cid                 : this.cid,
 				userHasEmail        : !!OC.getCurrentUser().email,
