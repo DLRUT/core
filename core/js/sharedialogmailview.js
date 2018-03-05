@@ -189,6 +189,7 @@
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
 				containerCssClass: 'emailPrivateLinkForm--dropDown',
 				tags: [],
+                minimumInputLength: 3,
 				tokenSeparators:[","],
 				ajax: {
 					url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
