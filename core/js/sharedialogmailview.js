@@ -48,7 +48,7 @@
 		},
 
 		/** @type {object} **/
-		addresses: {},
+		addresses: [],
 
 		/** @type {Function} **/
 		_template: undefined,
@@ -70,12 +70,11 @@
 		},
 
 		toggleMailElements: function() {
-			var $email         = this.$el.find('.emailPrivateLinkForm--emailField');
 			var $emailElements = this.$el.find('.emailPrivateLinkForm--elements');
 
-			if ($email.val().length > 0 && $emailElements.is(":hidden")) {
+			if (this.addresses.length > 0 && $emailElements.is(":hidden")) {
 				$emailElements.slideDown();
-			} else if ($email.val().length === 0 && $emailElements.is(":visible")) {
+			} else if (this.addresses.length === 0 && $emailElements.is(":visible")) {
 				$emailElements.slideUp();
 			}
 		},
@@ -189,7 +188,7 @@
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
 				containerCssClass: 'emailPrivateLinkForm--dropDown',
 				tags: [],
-                minimumInputLength: 3,
+				minimumInputLength: 3,
 				tokenSeparators:[","],
 				ajax: {
 					url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
@@ -201,18 +200,22 @@
 						};
 					},
 					results: function (data, page, query) {
-
-						if (data.status != 'success')
-							return null
-
 						// format results
-						var fromQuery = (query.term.length) ? [{ id: query.term, text: query.term }] : [];
+						var fromQuery = [];
 						var fromData  = _.map(data.data, function(item) {
 							return {
 								'id'   : item.email,
 								'text' : item.displayname + ' (' + item.email + ')'
 							}
 						});
+
+						if (query.term.length) {
+							fromQuery = [{
+								id       : query.term.toLowerCase(),
+								text     : query.term,
+								disabled : !_this.validateEmail(query.term)
+							}]
+						}
 
 						return {
 							results: fromQuery.concat(fromData)
@@ -221,9 +224,13 @@
 					cache: true
 				}
 			}).on("change", function(e) {
-				// _this.toggleMailElements()
+				if (e.added)
+					_this.addresses.push(e.added.id);
 
-				console.info("Added: ", e.added);
+				if (e.removed)
+					_this.addresses = _.without(_this.addresses, e.removed.id)
+
+				_this.toggleMailElements();
 			});
 		},
 
