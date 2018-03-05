@@ -48,7 +48,7 @@
 		},
 
 		/** @type {object} **/
-		addresses: {},
+		addresses: [],
 
 		/** @type {Function} **/
 		_template: undefined,
@@ -189,7 +189,7 @@
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
 				containerCssClass: 'emailPrivateLinkForm--dropDown',
 				tags: [],
-                minimumInputLength: 3,
+				minimumInputLength: 3,
 				tokenSeparators:[","],
 				ajax: {
 					url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
@@ -201,18 +201,22 @@
 						};
 					},
 					results: function (data, page, query) {
-
-						if (data.status != 'success')
-							return null
-
 						// format results
-						var fromQuery = (query.term.length) ? [{ id: query.term, text: query.term }] : [];
+						var fromQuery = [];
 						var fromData  = _.map(data.data, function(item) {
 							return {
 								'id'   : item.email,
 								'text' : item.displayname + ' (' + item.email + ')'
 							}
 						});
+
+						if (query.term.length) {
+							fromQuery = [{
+								id       : query.term.toLowerCase(),
+								text     : query.term,
+								disabled : !_this.validateEmail(query.term)
+							}]
+						}
 
 						return {
 							results: fromQuery.concat(fromData)
@@ -223,7 +227,12 @@
 			}).on("change", function(e) {
 				// _this.toggleMailElements()
 
-				console.info("Added: ", e.added);
+				console.log(e);
+
+				if (e.added)
+					_this.addresses.push(e.added.id);
+
+				console.info("Addresses: ", _this.addresses);
 			});
 		},
 
