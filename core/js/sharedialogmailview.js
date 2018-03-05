@@ -18,7 +18,6 @@
 		'  <span class="emailPrivateLinkForm--send-indicator success-message-global absolute-center hidden">{{sending}}</span>' +
 		'  <label class="public-link-modal--label" for="emailPrivateLinkField-{{cid}}">{{mailLabel}}</label>' +
 		'  <input class="public-link-modal--input emailPrivateLinkForm--emailField" id="emailPrivateLinkField-{{cid}}" value="" type="hidden" />' +
-		'  <select id="uu"><option>1</option><option>2</option></select>' +
 		'  <div class="emailPrivateLinkForm--elements hidden">' +
 		'    {{#if userHasEmail}}' +
 		'    <label class="public-link-modal--bccSelf">' +
@@ -45,9 +44,11 @@
 		id: 'shareDialogMailView',
 
 		events: {
-			"keyup   .emailPrivateLinkForm--emailField"     : "toggleMailElements",
 			"keydown .emailPrivateLinkForm--emailBodyField" : "expandMailBody"
 		},
+
+        /** @type {object} **/
+        addresses: {},
 
 		/** @type {Function} **/
 		_template: undefined,
@@ -69,7 +70,7 @@
 		},
 
 		toggleMailElements: function() {
-			var $email         = this.$el.find('.emailPrivateLinkForm--emailField');
+			var $email         = $('.emailPrivateLinkForm--emailField');
 			var $emailElements = this.$el.find('.emailPrivateLinkForm--elements');
 
 			if ($email.val().length > 0 && $emailElements.is(":hidden")) {
@@ -77,6 +78,8 @@
 			} else if ($email.val().length === 0 && $emailElements.is(":visible")) {
 				$emailElements.slideUp();
 			}
+
+            console.log("mail: " + $email.val().length);
 		},
 
 		expandMailBody: function(event) {
@@ -183,11 +186,46 @@
 		},
 
 		afterRender: function () {
+            var _this = this;
+
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
-				// data:[{id:0,text:'enhancement'},{id:1,text:'bug'},{id:2,text:'duplicate'},{id:3,text:'invalid'},{id:4,text:'wontfix'}],
-				tags:["hi"],
-				tokenSeparators:[","]
-			});
+                containerCssClass: 'emailPrivateLinkForm--dropDown',
+                tags: [],
+				tokenSeparators:[","],
+                ajax: {
+                    url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
+                    dataType: 'json',
+                    quietMillis: 250,
+                    data: function (term) {
+                        return {
+                            search: term
+                        };
+                    },
+                    results: function (data, page, query) {
+
+                        if (data.status != 'success')
+                            return null
+
+                        // format results
+                        var fromQuery = (query.term.length) ? [{ id: query.term, text: query.term }] : [];
+                        var fromData  = _.map(data.data, function(item) {
+                            return {
+                                'id'   : item.email,
+                                'text' : item.displayname + ' (' + item.email + ')'
+                            }
+                        });
+
+                        return {
+                            results: fromQuery.concat(fromData)
+                        }
+                    },
+                    cache: true
+                }
+			}).on("change", function(e) {
+                // _this.toggleMailElements()
+
+                console.info("Added: ", e.added);
+            });
 		},
 
 		/**

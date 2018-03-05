@@ -229,3 +229,8 @@ a.showCruds:hover,a.unshare:hover {
 	z-index: 1;
 	color: #999;
 }
+
+.emailPrivateLinkForm--dropDown > .select2-choices {
+	border-color: #ddd;
+	background-image: none;
+}
