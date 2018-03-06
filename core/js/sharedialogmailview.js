@@ -143,8 +143,6 @@
 				 body    : this.$el.find('.emailPrivateLinkForm--emailBodyField').val()
 			};
 
-            console.log(this.addresses.join(','));
-
 			if (mail.to !== '') {
 				$formItems.prop('disabled', true);
 				$formSendIndicator.removeClass('hidden');
