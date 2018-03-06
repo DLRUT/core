@@ -54,11 +54,11 @@
 		_template: undefined,
 
 		initialize: function(options) {
-			_.bindAll(this, 'render', 'afterRender');
+			_.bindAll(this, 'render', '_afterRender');
 			var _this = this;
 			this.render = _.wrap(this.render, function(render) {
 				render();
-				_this.afterRender();
+				_this._afterRender();
 				return _this;
 			});
 
@@ -161,8 +161,8 @@
 		},
 
 		render: function() {
-            // make sure this is empty
-            this.addresses = [];
+			// make sure this is empty
+			this.addresses = [];
 
 			this.$el.html(this.template({
 				cid                 : this.cid,
@@ -179,7 +179,7 @@
 
 		},
 
-		afterRender: function () {
+		_afterRender: function () {
 			var _this = this;
 
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
