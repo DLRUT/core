@@ -17,7 +17,7 @@
 		'<form id="emailPrivateLink" class="emailPrivateLinkForm">' +
 		'  <span class="emailPrivateLinkForm--send-indicator success-message-global absolute-center hidden">{{sending}}</span>' +
 		'  <label class="public-link-modal--label" for="emailPrivateLinkField-{{cid}}">{{mailLabel}}</label>' +
-		'  <input class="public-link-modal--input emailPrivateLinkForm--emailField" id="emailPrivateLinkField-{{cid}}" value="" type="hidden" />' +
+		'  <input class="emailPrivateLinkForm--emailField full-width" id="emailPrivateLinkField-{{cid}}" />' +
 		'  <div class="emailPrivateLinkForm--elements hidden">' +
 		'    {{#if userHasEmail}}' +
 		'    <label class="public-link-modal--bccSelf">' +
