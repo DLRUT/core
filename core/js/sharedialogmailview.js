@@ -184,13 +184,13 @@
 
 			this.$el.find('.emailPrivateLinkForm--emailField').select2({
 				containerCssClass: 'emailPrivateLinkForm--dropDown',
-				tags: [],
+				tags: true,
 				minimumInputLength: 3,
 				tokenSeparators:[","],
 				ajax: {
 					url: OC.generateUrl('core/ajax/share.php?fetch=getShareWithEmail'),
 					dataType: 'json',
-					quietMillis: 250,
+					quietMillis: 0,
 					data: function (term) {
 						return {
 							search: term
